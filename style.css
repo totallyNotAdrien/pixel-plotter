@@ -8,9 +8,10 @@
     left: 10vmin;
 }
 
-.grid-item
+.pixel
 {
-    background-color: black;
+    border: solid;
+    border-width: thin;
 }
 
 .buttons
