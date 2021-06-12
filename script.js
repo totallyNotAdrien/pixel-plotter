@@ -52,6 +52,13 @@ function fill(e)
         {
             case ColorModes.BLACK:
                 e.target.style.backgroundColor = Color.BLACK.toCssString();
+                break;
+            case ColorModes.GRAYSCALE:
+                fiftyshades();
+                break;
+            case ColorModes.RAINBOW:
+                e.target.style.backgroundColor = Color.randomColor().toCssString();
+                break;
         }
     }
     
@@ -97,7 +104,7 @@ function createGrid(gridSize)
     for (let i = 0; i < numItems; i++)
     {
         let temp = document.createElement("div");
-        temp.style.backgroundColor = Color.randomColor().toCssString();
+        temp.style.backgroundColor = Color.WHITE.toCssString();
         if(gridlines)
         {
             temp.style.borderStyle = "solid";
@@ -137,7 +144,16 @@ function setupButtons()
     //new size
     const newSizeButton = document.querySelector("#new-size-button");
     newSizeButton.addEventListener("click", newSize);
+
     //black
+    const blackButton = document.querySelector("#black-button")
+    blackButton.addEventListener("click", () => colorMode = ColorModes.BLACK);
+
+    //grayscale
+
+    //rainbow
+    const rainbowButton = document.querySelector("#rainbow-button");
+    rainbowButton.addEventListener("click", () => colorMode = ColorModes.RAINBOW);
 }
 
 function clearGrid()
@@ -184,4 +200,9 @@ function toggleGridlines()
             div.style.border = "none";
         }
     });
+}
+
+function fiftyshades()
+{
+
 }
