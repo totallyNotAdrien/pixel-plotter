@@ -2,6 +2,8 @@ class Color
 {
     static BLACK = new Color(0, 0, 0, 1);
     static WHITE = new Color(255, 255, 255, 1);
+    static GRAY = new Color(127, 127, 127, 1);
+    static LIGHT_GRAY = new Color(230, 230, 230, 1);
 
     constructor(red, green, blue, alpha = 1)
     {
@@ -33,6 +35,7 @@ const ColorModes =
 const INIT_GRID_SIZE = 16;
 const grid = document.querySelector("#grid");
 const html = document.querySelector("html");
+let gridlines = true;
 
 let drawing = false;
 let colorMode;
@@ -88,13 +91,23 @@ function setup()
 function createGrid(gridSize)
 {
     grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-    let numInitItems = gridSize * gridSize;
+    let numItems = gridSize * gridSize;
     divs.length = 0;
 
-    for (let i = 0; i < numInitItems; i++)
+    for (let i = 0; i < numItems; i++)
     {
         let temp = document.createElement("div");
         temp.style.backgroundColor = Color.randomColor().toCssString();
+        if(gridlines)
+        {
+            temp.style.borderStyle = "solid";
+            temp.style.borderColor = Color.BLACK.toCssString();
+            temp.style.borderWidth = "1px";
+        }
+        else
+        {
+            temp.style.border = "none";
+        }
         temp.classList.add("pixel");
         temp.addEventListener("mousedown", (e) => 
         {
@@ -113,6 +126,10 @@ function createGrid(gridSize)
 
 function setupButtons()
 {
+    //toggle gridlines
+    const toggleGridlinesButton = document.querySelector("#toggle-gridlines-button");
+    toggleGridlinesButton.addEventListener("click", toggleGridlines);
+
     //clear
     const clearButton = document.querySelector("#clear-button");
     clearButton.addEventListener("click", clearGrid);
@@ -149,4 +166,22 @@ function deleteGrid()
     {
         grid.removeChild(grid.firstChild);
     }
+}
+
+function toggleGridlines()
+{
+    gridlines = !gridlines;
+    divs.forEach(div =>
+    {
+        if(gridlines)
+        {
+            div.style.borderStyle = "solid";
+            div.style.borderColor = Color.BLACK.toCssString();
+            div.style.borderWidth = "1px";
+        }
+        else
+        {
+            div.style.border = "none";
+        }
+    });
 }
