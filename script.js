@@ -32,20 +32,26 @@ const ColorModes =
 
 const INIT_GRID_SIZE = 16;
 const grid = document.querySelector("#grid");
+const html = document.querySelector("html");
 
+let drawing = false;
 let colorMode;
-let items = [];
+let divs = [];
 setup();
 
 
 
 function fill(e)
 {
-    switch (colorMode)
+    if(drawing)
     {
-        case ColorModes.BLACK:
-            e.target.style.backgroundColor = Color.BLACK.toCssString();
+        switch (colorMode)
+        {
+            case ColorModes.BLACK:
+                e.target.style.backgroundColor = Color.BLACK.toCssString();
+        }
     }
+    
 }
 
 function randomExclusive(a, b = 0)
@@ -83,14 +89,23 @@ function createGrid(gridSize)
 {
     grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
     let numInitItems = gridSize * gridSize;
+    divs.length = 0;
 
     for (let i = 0; i < numInitItems; i++)
     {
         let temp = document.createElement("div");
         temp.style.backgroundColor = Color.randomColor().toCssString();
         temp.classList.add("pixel");
+        temp.addEventListener("mousedown", (e) => 
+        {
+            drawing = !drawing;
+            if(drawing)
+            {
+                fill(e);
+            }
+        });
         temp.addEventListener("mouseover", fill);
-        items.push(temp);
+        divs.push(temp);
         grid.appendChild(temp);
     }
     colorMode = ColorModes.BLACK;
@@ -101,13 +116,37 @@ function setupButtons()
     //clear
     const clearButton = document.querySelector("#clear-button");
     clearButton.addEventListener("click", clearGrid);
+
+    //new size
+    const newSizeButton = document.querySelector("#new-size-button");
+    newSizeButton.addEventListener("click", newSize);
+    //black
 }
 
 function clearGrid()
 {
-    let children = Array.from(grid.childNodes);
-    children.forEach(child => 
+    divs.forEach(div => div.style.backgroundColor = Color.WHITE.toCssString());
+}
+
+function newSize()
+{
+    let input = prompt('How many "pixels" per side? (64 max)');
+    let num = parseInt(input);
+    if(!isNaN(num))
     {
-        child.style.backgroundColor = Color.WHITE.toCssString();
-    });
+        if(num > 64)
+        {
+            num = 64;
+        }
+        deleteGrid();
+        createGrid(num);
+    }
+}
+
+function deleteGrid()
+{
+    while(grid.firstChild)
+    {
+        grid.removeChild(grid.firstChild);
+    }
 }
