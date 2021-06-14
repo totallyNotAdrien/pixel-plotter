@@ -13,15 +13,6 @@ class Color
         this.alpha = alpha;
     }
 
-    static fromArray(arr)
-    {
-
-        if (arr.length === 4)
-        {
-            return new Color(arr[0], arr[1], arr[2], arr[3]);
-        }
-    }
-
     toCssString()
     {
         return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`;
@@ -29,7 +20,7 @@ class Color
 
     static randomColor(alpha = 1)
     {
-        return new Color(randomExclusive(256), randomExclusive(256), randomExclusive(256), alpha);
+        return new Color(randomRangeExclusive(256), randomRangeExclusive(256), randomRangeExclusive(256), alpha);
     }
 
 }
@@ -46,6 +37,7 @@ const grid = document.querySelector("#grid");
 const html = document.querySelector("html");
 let gridlines = true;
 
+const grayscaleString = "grayscale";
 let drawing = false;
 let colorMode;
 let divs = [];
@@ -59,7 +51,7 @@ function fill(e)
     {
         if (colorMode !== ColorModes.GRAYSCALE)
         {
-            e.target.classList.remove("grayscale");
+            e.target.classList.remove(grayscaleString);
         }
         switch (colorMode)
         {
@@ -67,17 +59,20 @@ function fill(e)
                 e.target.style.backgroundColor = Color.BLACK.toCssString();
                 break;
             case ColorModes.GRAYSCALE:
-                fiftyshades(e);
+                fillGrayscale(e);
                 break;
             case ColorModes.RAINBOW:
                 e.target.style.backgroundColor = Color.randomColor().toCssString();
+                break;
+            default:
+                console.error("ERROR: no color mode set");
                 break;
         }
     }
 
 }
 
-function randomExclusive(a, b = 0)
+function randomRangeExclusive(a, b = 0)
 {
     if (typeof a === typeof 2 && typeof b === typeof 2)
     {
@@ -87,20 +82,6 @@ function randomExclusive(a, b = 0)
         return Math.random() * range + min;
     }
 }
-
-function manyRandoms(count, a, b = 0)
-{
-    if (typeof a === typeof 2 && typeof b === typeof 2 && typeof count === typeof 2)
-    {
-        let nums = [];
-        for (let i = 0; i < count; i++)
-        {
-            nums.push(randomExclusive(a, b,));
-        }
-        return nums;
-    }
-}
-
 
 function setup()
 {
@@ -183,7 +164,10 @@ function setupButtons()
 
 function clearGrid()
 {
-    divs.forEach(div => div.style.backgroundColor = Color.WHITE.toCssString());
+    divs.forEach(div => {
+        div.style.backgroundColor = Color.WHITE.toCssString();
+        div.classList.remove(grayscaleString);
+    });
 }
 
 function newSize()
@@ -227,10 +211,10 @@ function toggleGridlines()
     });
 }
 
-function fiftyshades(e)
+function fillGrayscale(e)
 {
     let div = e.target;
-    if (div.classList.contains("grayscale"))
+    if (div.classList.contains(grayscaleString))
     {
         let nums = extractNumsFromString(div.style.backgroundColor);
         if (nums.length === 4)
@@ -241,12 +225,11 @@ function fiftyshades(e)
     }
     else
     {
-        div.classList.add("grayscale");
+        div.classList.add(grayscaleString);
         div.style.backgroundColor = "rgba(0,0,0,0.1)";
     }
 }
 
-let thing = "rgba(234,255,123,0.919)";
 function extractNumsFromString(str)
 {
     let nums = [];
