@@ -3,14 +3,21 @@ html
     height: 100%;
 }
 
+header
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 #grid
 {
     display: grid;
-    width: 80vmin;
-    height: 80vmin;
+    width: 60vmin;
+    height: 60vmin;
 
     position: absolute;
-    left: 10vmin;
+    left: 20vw;
 
     border-style: solid;
     border-color: black;
@@ -25,6 +32,20 @@ html
 
 .buttons
 {
-    position: relative;
-    
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    transform: translateX(10vw);
+    margin: 0;
+    width: 80vw;
+}
+
+button
+{
+    height: 30px;
+    margin: 5px;
+}
+
+#drawing-indicator
+{
+    transform: translateX(20vw);
 }

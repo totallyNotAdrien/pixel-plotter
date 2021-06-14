@@ -4,6 +4,8 @@ class Color
     static WHITE = new Color(255, 255, 255, 1);
     static GRAY = new Color(127, 127, 127, 1);
     static LIGHT_GRAY = new Color(230, 230, 230, 1);
+    static RED = new Color(255, 0, 0, 1);
+    static GREEN = new Color(0, 200, 0, 1);
 
     constructor(red, green, blue, alpha = 1)
     {
@@ -35,6 +37,7 @@ const ColorModes =
 const INIT_GRID_SIZE = 16;
 const grid = document.querySelector("#grid");
 const html = document.querySelector("html");
+const drawingIndicator = document.querySelector("#drawing-indicator");
 let gridlines = true;
 
 const grayscaleString = "grayscale";
@@ -87,6 +90,7 @@ function setup()
 {
     createGrid(INIT_GRID_SIZE);
     setupButtons();
+    setupDrawingIndicator();
 }
 
 function createGrid(gridSize)
@@ -127,7 +131,14 @@ function setupNewDiv()
         drawing = !drawing;
         if (drawing)
         {
+            drawingIndicator.style.color = Color.RED.toCssString();
+            drawingIndicator.textContent = "Drawing";
             fill(e);
+        }
+        else
+        {
+            drawingIndicator.style.color = Color.GREEN.toCssString();
+            drawingIndicator.textContent = "Not Drawing";
         }
     });
 
@@ -162,9 +173,15 @@ function setupButtons()
     rainbowButton.addEventListener("click", () => colorMode = ColorModes.RAINBOW);
 }
 
+function setupDrawingIndicator()
+{
+    drawingIndicator.style.color = Color.GREEN.toCssString();
+}
+
 function clearGrid()
 {
-    divs.forEach(div => {
+    divs.forEach(div =>
+    {
         div.style.backgroundColor = Color.WHITE.toCssString();
         div.classList.remove(grayscaleString);
     });
