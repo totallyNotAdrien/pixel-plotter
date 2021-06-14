@@ -13,6 +13,15 @@ class Color
         this.alpha = alpha;
     }
 
+    static fromArray(arr)
+    {
+
+        if (arr.length === 4)
+        {
+            return new Color(arr[0], arr[1], arr[2], arr[3]);
+        }
+    }
+
     toCssString()
     {
         return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`;
@@ -46,22 +55,26 @@ setup();
 
 function fill(e)
 {
-    if(drawing)
+    if (drawing)
     {
+        if (colorMode !== ColorModes.GRAYSCALE)
+        {
+            e.target.classList.remove("grayscale");
+        }
         switch (colorMode)
         {
             case ColorModes.BLACK:
                 e.target.style.backgroundColor = Color.BLACK.toCssString();
                 break;
             case ColorModes.GRAYSCALE:
-                fiftyshades();
+                fiftyshades(e);
                 break;
             case ColorModes.RAINBOW:
                 e.target.style.backgroundColor = Color.randomColor().toCssString();
                 break;
         }
     }
-    
+
 }
 
 function randomExclusive(a, b = 0)
@@ -103,32 +116,42 @@ function createGrid(gridSize)
 
     for (let i = 0; i < numItems; i++)
     {
-        let temp = document.createElement("div");
-        temp.style.backgroundColor = Color.WHITE.toCssString();
-        if(gridlines)
-        {
-            temp.style.borderStyle = "solid";
-            temp.style.borderColor = Color.BLACK.toCssString();
-            temp.style.borderWidth = "1px";
-        }
-        else
-        {
-            temp.style.border = "none";
-        }
-        temp.classList.add("pixel");
-        temp.addEventListener("mousedown", (e) => 
-        {
-            drawing = !drawing;
-            if(drawing)
-            {
-                fill(e);
-            }
-        });
-        temp.addEventListener("mouseover", fill);
+        let temp = setupNewDiv();
         divs.push(temp);
         grid.appendChild(temp);
     }
     colorMode = ColorModes.BLACK;
+}
+
+function setupNewDiv()
+{
+    let temp = document.createElement("div");
+    temp.style.backgroundColor = Color.WHITE.toCssString();
+
+    if (gridlines)
+    {
+        temp.style.borderStyle = "solid";
+        temp.style.borderColor = Color.BLACK.toCssString();
+        temp.style.borderWidth = "1px";
+    }
+    else
+    {
+        temp.style.border = "none";
+    }
+
+    temp.classList.add("pixel");
+
+    temp.addEventListener("mousedown", (e) => 
+    {
+        drawing = !drawing;
+        if (drawing)
+        {
+            fill(e);
+        }
+    });
+
+    temp.addEventListener("mouseover", fill);
+    return temp;
 }
 
 function setupButtons()
@@ -150,6 +173,8 @@ function setupButtons()
     blackButton.addEventListener("click", () => colorMode = ColorModes.BLACK);
 
     //grayscale
+    const grayscaleButton = document.querySelector("#grayscale-button")
+    grayscaleButton.addEventListener("click", () => colorMode = ColorModes.GRAYSCALE);
 
     //rainbow
     const rainbowButton = document.querySelector("#rainbow-button");
@@ -165,9 +190,9 @@ function newSize()
 {
     let input = prompt('How many "pixels" per side? (64 max)');
     let num = parseInt(input);
-    if(!isNaN(num))
+    if (!isNaN(num))
     {
-        if(num > 64)
+        if (num > 64)
         {
             num = 64;
         }
@@ -178,7 +203,7 @@ function newSize()
 
 function deleteGrid()
 {
-    while(grid.firstChild)
+    while (grid.firstChild)
     {
         grid.removeChild(grid.firstChild);
     }
@@ -189,7 +214,7 @@ function toggleGridlines()
     gridlines = !gridlines;
     divs.forEach(div =>
     {
-        if(gridlines)
+        if (gridlines)
         {
             div.style.borderStyle = "solid";
             div.style.borderColor = Color.BLACK.toCssString();
@@ -202,7 +227,57 @@ function toggleGridlines()
     });
 }
 
-function fiftyshades()
+function fiftyshades(e)
 {
+    let div = e.target;
+    if (div.classList.contains("grayscale"))
+    {
+        let nums = extractNumsFromString(div.style.backgroundColor);
+        if (nums.length === 4)
+        {
+            nums[3] += 0.1;
+            div.style.backgroundColor = `rgba(${nums})`;
+        }
+    }
+    else
+    {
+        div.classList.add("grayscale");
+        div.style.backgroundColor = "rgba(0,0,0,0.1)";
+    }
+}
 
+let thing = "rgba(234,255,123,0.919)";
+function extractNumsFromString(str)
+{
+    let nums = [];
+    if (typeof str === typeof "")
+    {
+        let strToSplit = "";
+        for (let i = 0; i < str.length; i++)
+        {
+            if (isDigit(str[i]) || str[i] === ',' || str[i] === '.')
+            {
+                strToSplit += str[i];
+            }
+        }
+        nums = strToSplit.split(',');
+        for (let i = 0; i < nums.length; i++)
+        {
+            let temp = parseFloat(nums[i]);
+            nums[i] = temp;
+        }
+    }
+    return nums;
+}
+
+function isDigit(char)
+{
+    if (typeof char === typeof "" && char.length === 1)
+    {
+        if (char >= '0' && char <= 9)
+        {
+            return true;
+        }
+    }
+    return false;
 }
